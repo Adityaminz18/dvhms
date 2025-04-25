@@ -43,3 +43,4 @@ def delete_doctor(doctor_id: int, db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail="Doctor not found")
     return {"detail": "Doctor deleted"}
 # This code defines a FastAPI router for managing doctors in a hospital management system.
+# It includes endpoints for creating, listing, retrieving, updating, and deleting doctor records.

@@ -2,12 +2,13 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from database import engine, Base
 
-from routers import patients, doctors
+from routers import patients, doctors, appointments
 
 
 app = FastAPI()
 app.include_router(patients.router)
 app.include_router(doctors.router)
+app.include_router(appointments.router)
 
 # CORS setup to allow Bolt.new frontend to access backend
 app.add_middleware(

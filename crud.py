@@ -63,3 +63,35 @@ def delete_doctor(db: Session, doctor_id: int):
         db.delete(db_doctor)
         db.commit()
     return db_doctor
+
+# ------------------ APPOINTMENTS ------------------
+
+def create_appointment(db: Session, appointment: schemas.AppointmentCreate):
+    db_appointment = models.Appointment(**appointment.dict())
+    db.add(db_appointment)
+    db.commit()
+    db.refresh(db_appointment)
+    return db_appointment
+
+def get_appointment(db: Session, appointment_id: int):
+    return db.query(models.Appointment).filter(models.Appointment.id == appointment_id).first()
+
+def get_appointments(db: Session, skip: int = 0, limit: int = 10):
+    return db.query(models.Appointment).offset(skip).limit(limit).all()
+
+def update_appointment(db: Session, appointment_id: int, updated: schemas.AppointmentCreate):
+    db_appointment = get_appointment(db, appointment_id)
+    if db_appointment:
+        for key, value in updated.dict().items():
+            setattr(db_appointment, key, value)
+        db.commit()
+        db.refresh(db_appointment)
+    return db_appointment
+
+def delete_appointment(db: Session, appointment_id: int):
+    db_appointment = get_appointment(db, appointment_id)
+    if db_appointment:
+        db.delete(db_appointment)
+        db.commit()
+    return db_appointment
+# This code defines CRUD operations for managing patients, doctors, and appointments in a hospital management system.
