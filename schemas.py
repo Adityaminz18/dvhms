@@ -60,3 +60,10 @@ class AppointmentOut(AppointmentBase):
     id: int
     class Config:
         orm_mode = True
+
+# Auth-related schemas already added before (UserCreate, UserOut)
+# If not, here's a recap:
+
+class Token(BaseModel):
+    access_token: str
+    token_type: str
