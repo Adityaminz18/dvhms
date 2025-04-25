@@ -1,0 +1,62 @@
+from pydantic import BaseModel
+from typing import Optional
+from datetime import date, time
+
+# User
+class UserBase(BaseModel):
+    username: str
+    role: str
+
+class UserCreate(UserBase):
+    password: str
+
+class UserOut(UserBase):
+    id: int
+    class Config:
+        orm_mode = True
+
+# Patient
+class PatientBase(BaseModel):
+    name: str
+    age: int
+    gender: str
+    address: str
+    phone: str
+
+class PatientCreate(PatientBase):
+    pass
+
+class PatientOut(PatientBase):
+    id: int
+    class Config:
+        orm_mode = True
+
+# Doctor
+class DoctorBase(BaseModel):
+    name: str
+    specialization: str
+    phone: str
+
+class DoctorCreate(DoctorBase):
+    pass
+
+class DoctorOut(DoctorBase):
+    id: int
+    class Config:
+        orm_mode = True
+
+# Appointment
+class AppointmentBase(BaseModel):
+    patient_id: int
+    doctor_id: int
+    date: date
+    time: time
+    status: str
+
+class AppointmentCreate(AppointmentBase):
+    pass
+
+class AppointmentOut(AppointmentBase):
+    id: int
+    class Config:
+        orm_mode = True
