@@ -2,7 +2,12 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from database import engine, Base
 
+from routers import patients, doctors
+
+
 app = FastAPI()
+app.include_router(patients.router)
+app.include_router(doctors.router)
 
 # CORS setup to allow Bolt.new frontend to access backend
 app.add_middleware(
@@ -19,3 +24,4 @@ Base.metadata.create_all(bind=engine)
 @app.get("/")
 def root():
     return {"message": "Hospital Management System API is running 🚀"}
+
