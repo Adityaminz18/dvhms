@@ -66,3 +66,23 @@ def delete_patient(
     if not db_patient:
         raise HTTPException(status_code=404, detail="Patient not found")
     return {"detail": "Patient deleted"}
+
+@router.put("/link_user/{patient_id}", response_model=schemas.PatientOut)
+def link_patient_user(
+    patient_id: int,
+    user_id: int,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(admin_required)
+):
+    patient = crud.get_patient(db, patient_id)
+    if not patient:
+        raise HTTPException(status_code=404, detail="Patient not found")
+
+    if patient.user_id is not None:
+        raise HTTPException(status_code=400, detail="Patient already linked to a user.")
+
+    patient.user_id = user_id
+    db.commit()
+    db.refresh(patient)
+    return patient
+

@@ -24,14 +24,16 @@ class PatientBase(BaseModel):
     phone: str
 
 class PatientCreate(PatientBase):
-    pass
+    pass  # No user_id from frontend — backend will add automatically
 
 class PatientOut(PatientBase):
     id: int
+    user_id: Optional[int]  # 🆕 Return user_id
     class Config:
         orm_mode = True
 
-# Doctor
+# Doctor:
+
 class DoctorBase(BaseModel):
     name: str
     specialization: str
@@ -42,6 +44,7 @@ class DoctorCreate(DoctorBase):
 
 class DoctorOut(DoctorBase):
     id: int
+    user_id: Optional[int]  # 🆕 Return user_id
     class Config:
         orm_mode = True
 

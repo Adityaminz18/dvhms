@@ -1,17 +1,28 @@
+import os
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from database import engine, Base
+from routers import patients, doctors, appointments, auth, users
+from dotenv import load_dotenv
 
-from routers import patients, doctors, appointments,auth
+load_dotenv() 
+# Read the environment variable
+ENV = os.getenv("ENV", "development")
 
+# Configure FastAPI app based on the environment
+if ENV == "production":
+    app = FastAPI(docs_url=None, redoc_url=None, openapi_url=None)  # Disable docs in production
+else:
+    app = FastAPI()  # Default to development with docs enabled
 
-app = FastAPI()
+# Include routers
 app.include_router(patients.router)
 app.include_router(doctors.router)
 app.include_router(appointments.router)
 app.include_router(auth.router)
+app.include_router(users.router)
 
-# CORS setup to allow Bolt.new frontend to access backend
+# CORS setup to allow frontend to access backend
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],  # In production, use exact frontend URL

@@ -3,8 +3,11 @@ import models, schemas
 
 # ---------------------- PATIENT ----------------------
 
-def create_patient(db: Session, patient: schemas.PatientCreate):
-    db_patient = models.Patient(**patient.dict())
+def create_patient(db: Session, patient: schemas.PatientCreate, user_id: int = None):
+    patient_data = patient.dict()
+    if user_id:
+        patient_data["user_id"] = user_id
+    db_patient = models.Patient(**patient_data)
     db.add(db_patient)
     db.commit()
     db.refresh(db_patient)
@@ -35,13 +38,15 @@ def delete_patient(db: Session, patient_id: int):
 
 # ---------------------- DOCTOR ----------------------
 
-def create_doctor(db: Session, doctor: schemas.DoctorCreate):
-    db_doctor = models.Doctor(**doctor.dict())
+def create_doctor(db: Session, doctor: schemas.DoctorCreate, user_id: int = None):
+    doctor_data = doctor.dict()
+    if user_id:
+        doctor_data["user_id"] = user_id
+    db_doctor = models.Doctor(**doctor_data)
     db.add(db_doctor)
     db.commit()
     db.refresh(db_doctor)
     return db_doctor
-
 def get_doctor(db: Session, doctor_id: int):
     return db.query(models.Doctor).filter(models.Doctor.id == doctor_id).first()
 

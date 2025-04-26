@@ -11,6 +11,7 @@ class User(Base):
 class Patient(Base):
     __tablename__ = "patients"
     id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey("users.id"), unique=True)  # <--- NEW: Link to User
     name = Column(String)
     age = Column(Integer)
     gender = Column(String)
@@ -20,6 +21,7 @@ class Patient(Base):
 class Doctor(Base):
     __tablename__ = "doctors"
     id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey("users.id"), unique=True)  # <--- NEW: Link to User
     name = Column(String)
     specialization = Column(String)
     phone = Column(String)
