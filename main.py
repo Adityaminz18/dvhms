@@ -8,8 +8,7 @@ from dotenv import load_dotenv
 import models
 from auth import hash_password
 
-dotenv_path = os.path.join(os.path.dirname(__file__), '.env')
-load_dotenv(dotenv_path)
+load_dotenv()
 
 # 👇 Then, read ENV
 ENV = os.getenv("ENV", "development")  # default to development if missing
