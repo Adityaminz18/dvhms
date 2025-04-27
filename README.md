@@ -1,88 +1,161 @@
-# Hospital Management System
+# 🏥 Hospital Management System
 
-## Description
-The **Hospital Management System** is a web-based application designed to streamline hospital operations. It provides an efficient way to manage patients, doctors, and appointments. The backend is powered by **FastAPI** with **SQLite** as the database, while the frontend is built using **Bolt.new**, a no-code website builder that communicates with the backend via REST APIs.
+![Python](https://img.shields.io/badge/Python-3.11-blue)
+![FastAPI](https://img.shields.io/badge/FastAPI-Backend-brightgreen)
+![SQLite](https://img.shields.io/badge/Database-SQLite-lightblue)
+![Docker](https://img.shields.io/badge/Containerized-Docker-blue)
+![Deployed](https://img.shields.io/badge/Deployment-Render.com-orange)
 
-## Features
-- **Patient Management**: Add, update, and view patient records.
-- **Doctor Management**: Manage doctor profiles and specialties.
-- **Appointment Booking**: Schedule, update, and cancel appointments.
-- **Search Functionality**: Search for patients, doctors, or appointments.
-- **Secure API Communication**: REST APIs for seamless frontend-backend interaction.
+> Fullstack Dockerized Hospital Management System — FastAPI backend + Static Frontend (HTML/CSS/JS) 🚀
 
-## Tech Stack
-- **Backend**: FastAPI, SQLite
-- **Frontend**: Bolt.new (No-code website builder)
-- **API Communication**: REST APIs
+---
 
-## Installation Instructions
-### Backend Setup
-1. Clone the repository:
-    ```bash
-    git clone https://github.com/your-username/hospital-management-system.git
-    cd hospital-management-system
-    ```
-2. Create a virtual environment and activate it:
-    ```bash
-    python -m venv venv
-    source venv/bin/activate  # On Windows: venv\Scripts\activate
-    ```
-3. Install dependencies:
-    ```bash
-    pip install -r requirements.txt
-    ```
-4. Run the FastAPI server:
-    ```bash
-    uvicorn main:app --reload
-    ```
-5. Access the API documentation at `http://127.0.0.1:8000/docs`.
+## 📚 Table of Contents
 
-### Frontend Setup
-1. Use **Bolt.new** to design the frontend.
-2. Configure the frontend to make REST API calls to the backend server.
+- [Project Description](#-project-description)
+- [Features](#-features)
+- [Tech Stack](#-tech-stack)
+- [Project Structure](#-project-structure)
+- [Screenshots](#-screenshots)
+- [Local Deployment](#-local-deployment-docker-compose)
+- [Render Deployment](#-render-deployment)
+- [API Endpoints Overview](#-api-endpoints-overview)
+- [Environment Variables](#-environment-variables)
+- [Future Enhancements](#-future-enhancements)
+- [License](#-license)
+- [Support](#-support)
 
-## API Usage
-- Ensure **CORS** is enabled in the FastAPI backend:
-  ```python
-  from fastapi.middleware.cors import CORSMiddleware
+---
 
-  app.add_middleware(
-        CORSMiddleware,
-        allow_origins=["*"],  # Update with specific origins in production
-        allow_credentials=True,
-        allow_methods=["*"],
-        allow_headers=["*"],
-  )
-  ```
-- Example API call using `fetch()` in JavaScript:
-  ```javascript
-  fetch('http://127.0.0.1:8000/patients', {
-        method: 'GET',
-        headers: {
-             'Content-Type': 'application/json'
-        }
-  })
-  .then(response => response.json())
-  .then(data => console.log(data))
-  .catch(error => console.error('Error:', error));
-  ```
+## 📋 Project Description
 
-## Directory Structure
+The **Hospital Management System** streamlines hospital operations by managing Patients, Doctors, and Appointments.  
+Built with **FastAPI** backend, **SQLite** database, and a simple static **frontend with nginx**, all fully containerized with Docker.
+
+---
+
+## ✅ Features
+
+- Manage Patients, Doctors, Appointments
+- Secure Authentication (JWT)
+- Admin, Doctor, Patient roles
+- Search & filter functionality
+- REST API-first approach
+- Full API Documentation (`/api/docs`)
+- Production-ready Docker deployment
+
+---
+
+## 📋 Tech Stack
+
+| Layer            | Technology |
+|------------------|-------------|
+| Backend          | FastAPI, SQLAlchemy |
+| Frontend         | HTML5, CSS3, JavaScript |
+| Database         | SQLite |
+| Web Server       | nginx |
+| Containerization | Docker, Docker Compose |
+| Deployment       | Render.com |
+
+---
+
+## 📂 Project Structure
+
 ```
-Hospital Management System/
-├── main.py                # Entry point for the FastAPI application
-├── models/                # Database models
-├── routers/               # API route definitions
-├── database.py            # SQLite database connection
-├── requirements.txt       # Python dependencies
-└── README.md              # Project documentation
+dvhms/
+├── backend/                # FastAPI backend
+├── database/                # Database config
+├── models/                  # SQLAlchemy models
+├── routers/                 # API endpoints
+├── frontend/                # Static frontend (HTML/CSS/JS)
+├── auth.py                  # Auth helpers
+├── main.py                  # App entrypoint
+├── Dockerfile               # Combined Dockerfile (Backend + Frontend)
+├── Dockerfile.backend       # Backend-only Dockerfile
+├── Dockerfile.frontend      # Frontend-only Dockerfile
+├── docker-compose.yml       # For local development
+├── nginx.conf               # nginx configuration
+├── requirements.txt         # Python dependencies
+├── .env.example             # Example environment variables
+└── README.md                # Documentation
 ```
 
-## Future Improvements
-- Add user authentication and role-based access control.
-- Implement advanced reporting and analytics.
-- Integrate payment gateway for billing.
-- Enhance UI/UX of the frontend.
+---
 
-## License
-This project is licensed under the [MIT License](LICENSE).  
+## 🖼️ Screenshots
+
+> _Coming soon..._ (Add frontend screenshots here)
+
+---
+
+## 🐳 Local Deployment (Docker Compose)
+
+```bash
+git clone https://github.com/Adityaminz18/dvhms.git
+cd dvhms
+cp .env.example .env
+docker-compose up --build
+```
+
+- Frontend: http://localhost
+- Backend API: http://localhost:8000/api
+- Swagger Docs: http://localhost/api/docs
+
+---
+
+## 🚀 Render Deployment
+
+> Deploy easily on [Render.com](https://render.com/)
+
+1. Connect your GitHub repo to Render.
+2. Create a **New Web Service**.
+3. Environment: **Docker**.
+4. Set environment variables: `ENV`, `SECRET_KEY`, `ACCESS_TOKEN_EXPIRE_MINUTES`.
+5. Expose **Port 80**.
+6. Deploy and enjoy 🚀.
+
+---
+
+## 📢 API Endpoints Overview
+
+| Entity        | Endpoint |
+|---------------|----------|
+| Auth          | `/api/auth/login`, `/api/auth/signup` |
+| Users         | `/api/users` |
+| Doctors       | `/api/doctors` |
+| Patients      | `/api/patients` |
+| Appointments  | `/api/appointments` |
+| API Docs      | `/api/docs` |
+
+---
+
+## ⚙️ Environment Variables
+
+| Variable | Description |
+|:---------|:------------|
+| ENV | `development` or `production` |
+| SECRET_KEY | Secret key for JWT tokens |
+| ACCESS_TOKEN_EXPIRE_MINUTES | Token expiration time in minutes |
+
+> Set these manually in Render dashboard or `.env` file locally.
+
+---
+
+## 🔮 Future Enhancements
+
+- Password reset & email verification
+- Advanced dashboard & analytics
+- Move to PostgreSQL (production database)
+- Real-time notifications system
+
+---
+
+## 📜 License
+
+This project is licensed under the [MIT License](LICENSE).
+
+---
+
+## ⭐ Support
+
+If you find this project useful, please consider giving a ⭐ on [GitHub](https://github.com/Adityaminz18/dvhms)!
