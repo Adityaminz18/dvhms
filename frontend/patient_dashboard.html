@@ -121,7 +121,7 @@ document.addEventListener('DOMContentLoaded', async function () {
 
 async function loadProfile() {
     try {
-        const response = await fetchWithAuth('/patients/me');
+        const response = await fetchWithAuth('/api/patients/me');
         
         if (!response.ok) {
             throw new Error('Failed to load patient profile.');
@@ -144,7 +144,7 @@ async function loadProfile() {
 
 async function loadAppointments() {
     try {
-        const response = await fetchWithAuth('/appointments/');
+        const response = await fetchWithAuth('/api/appointments/');
 
         if (!response.ok) {
             throw new Error('Failed to fetch appointments.');
@@ -190,7 +190,7 @@ function getStatusColor(status) {
 
 async function loadDoctors() {
     try {
-        const response = await fetchWithAuth('/doctors/');
+        const response = await fetchWithAuth('/api/doctors/');
 
         if (!response.ok) {
             throw new Error('Failed to fetch doctors.');
@@ -240,7 +240,7 @@ document.getElementById('appointment-form').addEventListener('submit', async fun
     };
 
     try {
-        const response = await fetchWithAuth('/appointments/', {
+        const response = await fetchWithAuth('/api/appointments/', {
             method: 'POST',
             body: JSON.stringify(appointmentData)
         });

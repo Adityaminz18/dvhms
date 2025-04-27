@@ -175,13 +175,13 @@ async function loadAppointments(statusFilter) {
 async function updateAppointmentStatus(appointmentId, newStatus) {
   const token = localStorage.getItem('access_token');
   try {
-    const res = await fetch(`${BASE_URL}/appointments/${appointmentId}`, {
+    const res = await fetch(`${BASE_URL}/api/appointments/${appointmentId}`, {
       headers: { Authorization: `Bearer ${token}` }
     });
     const appointment = await res.json();
     appointment.status = newStatus;
 
-    await fetch(`${BASE_URL}/appointments/${appointmentId}`, {
+    await fetch(`${BASE_URL}/api/appointments/${appointmentId}`, {
       method: "PUT",
       headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
       body: JSON.stringify(appointment)
