@@ -1,5 +1,5 @@
 // js/utils.js
-const BASE_URL = "";
+const BASE_URL = window.location.origin;
 
 
 function fetchWithAuth(url, options = {}) {
