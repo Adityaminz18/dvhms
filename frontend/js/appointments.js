@@ -9,7 +9,7 @@ async function loadAppointments() {
     }
 
     try {
-        const response = await fetch(`${BASE_URL}/appointments/`, {
+        const response = await fetch(`${BASE_URL}/api/appointments/`, {
             headers: {
                 Authorization: `Bearer ${token}`
             }
@@ -56,7 +56,7 @@ async function addOrUpdateAppointment() {
     };
 
     if (editingAppointmentId) {
-        const response = await fetch(`${BASE_URL}/appointments/${editingAppointmentId}`, {
+        const response = await fetch(`${BASE_URL}/api/appointments/${editingAppointmentId}`, {
             method: "PUT",
             headers: {
                 Authorization: `Bearer ${token}`,
@@ -74,7 +74,7 @@ async function addOrUpdateAppointment() {
         }
 
     } else {
-        const response = await fetch(`${BASE_URL}/appointments/`, {
+        const response = await fetch(`${BASE_URL}/api/appointments/`, {
             method: "POST",
             headers: {
                 Authorization: `Bearer ${token}`,
@@ -111,7 +111,7 @@ async function deleteAppointment(appointmentId) {
     const confirmDelete = confirm("Are you sure you want to delete this appointment?");
     if (!confirmDelete) return;
 
-    const response = await fetch(`${BASE_URL}/appointments/${appointmentId}`, {
+    const response = await fetch(`${BASE_URL}/api/appointments/${appointmentId}`, {
         method: "DELETE",
         headers: {
             Authorization: `Bearer ${token}`
@@ -150,7 +150,7 @@ async function loadPatientsAndDoctors() {
   
     try {
       // Load patients
-      const patientsResp = await fetch(`${BASE_URL}/patients/`, {
+      const patientsResp = await fetch(`${BASE_URL}/api/patients/`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       const patients = await patientsResp.json();
@@ -164,7 +164,7 @@ async function loadPatientsAndDoctors() {
       });
   
       // Load doctors
-      const doctorsResp = await fetch(`${BASE_URL}/doctors/`, {
+      const doctorsResp = await fetch(`${BASE_URL}/api/doctors/`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       const doctors = await doctorsResp.json();

@@ -9,7 +9,7 @@ async function loadPatients() {
     }
 
     try {
-        const response = await fetch(`${BASE_URL}/patients/`, {
+        const response = await fetch(`${BASE_URL}/api/patients/`, {
             headers: {
                 Authorization: `Bearer ${token}`
             }
@@ -57,7 +57,7 @@ async function addOrUpdatePatient() {
 
     if (editingPatientId) {
         // Update existing patient
-        const response = await fetch(`${BASE_URL}/patients/${editingPatientId}`, {
+        const response = await fetch(`${BASE_URL}/api/patients/${editingPatientId}`, {
             method: "PUT",
             headers: {
                 Authorization: `Bearer ${token}`,
@@ -76,7 +76,7 @@ async function addOrUpdatePatient() {
 
     } else {
         // Add new patient
-        const response = await fetch(`${BASE_URL}/patients/`, {
+        const response = await fetch(`${BASE_URL}/api/patients/`, {
             method: "POST",
             headers: {
                 Authorization: `Bearer ${token}`,
@@ -113,7 +113,7 @@ function deletePatient(patientId) {
     const confirmDelete = confirm("Are you sure you want to delete this patient?");
     if (!confirmDelete) return;
 
-    fetch(`${BASE_URL}/patients/${patientId}`, {
+    fetch(`${BASE_URL}/api/patients/${patientId}`, {
         method: "DELETE",
         headers: {
             Authorization: `Bearer ${token}`

@@ -1,7 +1,7 @@
 
  // Change if you deploy
 
-async function login() {
+ async function login() {
     console.log("login() called ✅");
 
     const username = document.getElementById('username').value;
@@ -17,7 +17,7 @@ async function login() {
     formData.append('password', password);
 
     try {
-        const response = await fetch(`${BASE_URL}/auth/login`, {
+        const response = await fetch(`${BASE_URL}/api/auth/login`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded'
@@ -25,32 +25,34 @@ async function login() {
             body: formData
         });
 
+        const responseBody = await response.json(); // ✅ always parse
+
         if (response.ok) {
-            const data = await response.json();
-            console.log("Login successful:", data);
+            console.log("Login successful:", responseBody);
 
-            localStorage.setItem('access_token', data.access_token);
-            localStorage.setItem('user_role', data.role);
-            localStorage.setItem('username', data.username);
+            localStorage.setItem('access_token', responseBody.access_token);
+            localStorage.setItem('user_role', responseBody.role);
+            localStorage.setItem('username', responseBody.username);
 
-            if (data.role === 'admin') {
+            if (responseBody.role === 'admin') {
                 window.location.href = 'admin_dashboard.html';
-            } else if (data.role === 'doctor') {
+            } else if (responseBody.role === 'doctor') {
                 window.location.href = 'doctor_dashboard.html';
-            } else if (data.role === 'patient') {
+            } else if (responseBody.role === 'patient') {
                 window.location.href = 'patient_dashboard.html';
             } else {
                 alert('Unknown role.');
             }
         } else {
-            const errorData = await response.json();
-            alert('Login failed: ' + (errorData.detail || 'Unknown error'));
+            console.error("Login failed:", responseBody);
+            alert('Login failed: ' + (responseBody.detail || 'Unknown error'));
         }
     } catch (error) {
-        console.error('Error:', error);
-        alert('Something went wrong.');
+        console.error('Network error:', error);
+        alert('Network error. Please try again later.');
     }
 }
+
 
 // Add Event Listener after page load
 window.addEventListener('DOMContentLoaded', function() {

@@ -2,9 +2,9 @@ async function loadLinkingData() {
     const token = localStorage.getItem('access_token');
   
     const [patientsRes, doctorsRes, usersRes] = await Promise.all([
-      fetch(`${BASE_URL}/patients/`, { headers: { Authorization: `Bearer ${token}` } }),
-      fetch(`${BASE_URL}/doctors/`, { headers: { Authorization: `Bearer ${token}` } }),
-      fetch(`${BASE_URL}/users/`, { headers: { Authorization: `Bearer ${token}` } }),
+      fetch(`${BASE_URL}/api/patients/`, { headers: { Authorization: `Bearer ${token}` } }),
+      fetch(`${BASE_URL}/api/doctors/`, { headers: { Authorization: `Bearer ${token}` } }),
+      fetch(`${BASE_URL}/api/users/`, { headers: { Authorization: `Bearer ${token}` } }),
     ]);
   
     const patients = await patientsRes.json();
@@ -58,7 +58,7 @@ async function loadLinkingData() {
     const userId = document.getElementById('available-users-patient').value;
   
     try {
-      const resp = await fetch(`${BASE_URL}/patients/link_user/${patientId}?user_id=${userId}`, {
+      const resp = await fetch(`${BASE_URL}/api/patients/link_user/${patientId}?user_id=${userId}`, {
         method: "PUT",
         headers: { Authorization: `Bearer ${token}` }
       });
@@ -79,7 +79,7 @@ async function loadLinkingData() {
     const userId = document.getElementById('available-users-doctor').value;
   
     try {
-      const resp = await fetch(`${BASE_URL}/doctors/link_user/${doctorId}?user_id=${userId}`, {
+      const resp = await fetch(`${BASE_URL}/api/doctors/link_user/${doctorId}?user_id=${userId}`, {
         method: "PUT",
         headers: { Authorization: `Bearer ${token}` }
       });

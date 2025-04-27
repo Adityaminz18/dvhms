@@ -230,10 +230,10 @@
     const token = localStorage.getItem('access_token');
 
     const [appointmentsRes, patientsRes, doctorsRes, usersRes] = await Promise.all([
-      fetch(`${BASE_URL}/appointments/`, { headers: { Authorization: `Bearer ${token}` } }),
-      fetch(`${BASE_URL}/patients/`, { headers: { Authorization: `Bearer ${token}` } }),
-      fetch(`${BASE_URL}/doctors/`, { headers: { Authorization: `Bearer ${token}` } }),
-      fetch(`${BASE_URL}/users/`, { headers: { Authorization: `Bearer ${token}` } }),
+      fetch(`${BASE_URL}/api/appointments/`, { headers: { Authorization: `Bearer ${token}` } }),
+      fetch(`${BASE_URL}/api/patients/`, { headers: { Authorization: `Bearer ${token}` } }),
+      fetch(`${BASE_URL}/api/doctors/`, { headers: { Authorization: `Bearer ${token}` } }),
+      fetch(`${BASE_URL}/api/users/`, { headers: { Authorization: `Bearer ${token}` } }),
     ]);
 
     const appointments = await appointmentsRes.json();

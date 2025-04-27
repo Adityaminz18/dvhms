@@ -9,7 +9,7 @@ async function loadDoctors() {
     }
 
     try {
-        const response = await fetch(`${BASE_URL}/doctors/`, {
+        const response = await fetch(`${BASE_URL}/api/doctors/`, {
             headers: {
                 Authorization: `Bearer ${token}`
             }
@@ -52,7 +52,7 @@ async function addOrUpdateDoctor() {
     };
 
     if (editingDoctorId) {
-        const response = await fetch(`${BASE_URL}/doctors/${editingDoctorId}`, {
+        const response = await fetch(`${BASE_URL}/api/doctors/${editingDoctorId}`, {
             method: "PUT",
             headers: {
                 Authorization: `Bearer ${token}`,
@@ -70,7 +70,7 @@ async function addOrUpdateDoctor() {
         }
 
     } else {
-        const response = await fetch(`${BASE_URL}/doctors/`, {
+        const response = await fetch(`${BASE_URL}/api/doctors/`, {
             method: "POST",
             headers: {
                 Authorization: `Bearer ${token}`,
@@ -105,7 +105,7 @@ async function deleteDoctor(doctorId) {
     const confirmDelete = confirm("Are you sure you want to delete this doctor?");
     if (!confirmDelete) return;
 
-    const response = await fetch(`${BASE_URL}/doctors/${doctorId}`, {
+    const response = await fetch(`${BASE_URL}/api/doctors/${doctorId}`, {
         method: "DELETE",
         headers: {
             Authorization: `Bearer ${token}`

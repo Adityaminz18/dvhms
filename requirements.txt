@@ -6,3 +6,4 @@ python-dotenv
 passlib[bcrypt]
 python-jose
 alembic  # For database migrations
+python-multipart

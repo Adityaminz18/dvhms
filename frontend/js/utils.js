@@ -1,5 +1,5 @@
 // js/utils.js
-const BASE_URL = "http://localhost:8000";
+const BASE_URL = "";
 
 
 function fetchWithAuth(url, options = {}) {
