@@ -7,9 +7,16 @@ from fastapi.security import OAuth2PasswordBearer
 from sqlalchemy.orm import Session
 from database import SessionLocal
 import models
+from fastapi import Request
+import os
+from dotenv import load_dotenv
 
 # SECRET KEY (you can use os.environ or dotenv for production)
 SECRET_KEY = "supersecretkey"
+load_dotenv()
+
+SECRET_KEY = os.getenv("SECRET_KEY", "fallbacksecretkey")
+ACCESS_TOKEN_EXPIRE_MINUTES = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", 60))
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 60
 
@@ -62,7 +69,6 @@ def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(
         raise credentials_exception
     return user
 
-from fastapi import Request
 
 def admin_required(current_user: User = Depends(get_current_user)):
     if current_user.role != "admin":

@@ -10,7 +10,7 @@ from auth import hash_password
 
 load_dotenv()
 
-ENV = os.getenv("ENV", "development")
+ENV = os.getenv("ENV")
 
 if ENV == "production":
     app = FastAPI(docs_url=None, redoc_url=None, openapi_url=None)
