@@ -1,0 +1,13 @@
+# Dockerfile.frontend
+FROM nginx:alpine
+
+# Remove default nginx HTML
+RUN rm -rf /usr/share/nginx/html/*
+
+# Copy your frontend build (HTML/CSS/JS) to nginx public directory
+COPY ./frontend/ /usr/share/nginx/html/
+
+# Copy custom nginx.conf that proxies /api requests
+COPY nginx.conf /etc/nginx/conf.d/default.conf
+
+EXPOSE 80
