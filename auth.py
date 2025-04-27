@@ -2,7 +2,11 @@ from datetime import datetime, timedelta
 from jose import JWTError, jwt
 from passlib.context import CryptContext
 from models import User
-
+from fastapi import Depends, HTTPException, status
+from fastapi.security import OAuth2PasswordBearer
+from sqlalchemy.orm import Session
+from database import SessionLocal
+import models
 
 # SECRET KEY (you can use os.environ or dotenv for production)
 SECRET_KEY = "supersecretkey"
@@ -31,11 +35,7 @@ def decode_access_token(token: str):
     except JWTError:
         return None
 
-from fastapi import Depends, HTTPException, status
-from fastapi.security import OAuth2PasswordBearer
-from sqlalchemy.orm import Session
-from database import SessionLocal
-import models
+
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="auth/login")
 

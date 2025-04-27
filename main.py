@@ -16,10 +16,10 @@ else:
     app = FastAPI()  # Default to development with docs enabled
 
 # Include routers
+app.include_router(auth.router)
 app.include_router(patients.router)
 app.include_router(doctors.router)
 app.include_router(appointments.router)
-app.include_router(auth.router)
 app.include_router(users.router)
 
 # CORS setup to allow frontend to access backend

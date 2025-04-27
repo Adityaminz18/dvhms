@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Link Users to Patients/Doctors</title>
+  <link rel="stylesheet" href="css/styles.css">
+  <style>
+    body {
+      visibility: hidden;
+    }
+    .container {
+      margin: 30px;
+    }
+    .link-section {
+      margin-bottom: 40px;
+      padding: 20px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      background: #f9f9f9;
+      max-width: 500px;
+    }
+    .form-row {
+      margin-bottom: 15px;
+    }
+    .form-row label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: bold;
+    }
+    select, button {
+      width: 100%;
+      padding: 8px;
+      font-size: 16px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+    }
+    button {
+      background-color: #3498db;
+      color: white;
+      border: none;
+      margin-top: 10px;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #2980b9;
+    }
+  </style>
+</head>
+<body>
+
+<div class="dashboard-container">
+  <div class="sidebar">
+    <h2>Admin Panel</h2>
+    <button onclick="window.location.href='admin_dashboard.html'">Dashboard</button>
+    <button onclick="window.location.href='patients.html'">Manage Patients</button>
+    <button onclick="window.location.href='doctors.html'">Manage Doctors</button>
+    <button onclick="window.location.href='appointments.html'">Manage Appointments</button>
+    <button onclick="window.location.href='link_users.html'">Link Users</button>
+    <button class="logout-button" onclick="logout()">Logout</button>
+  </div>
+
+  <div class="main-content">
+    <h1>Link Users to Patients/Doctors</h1>
+
+    <div class="container">
+
+      <div class="link-section">
+        <h2>Link Patient to User</h2>
+        <div class="form-row">
+          <label for="unlinked-patients">Unlinked Patients</label>
+          <select id="unlinked-patients"></select>
+        </div>
+
+        <div class="form-row">
+          <label for="available-users-patient">Available Users</label>
+          <select id="available-users-patient"></select>
+        </div>
+
+        <div class="form-row">
+          <button onclick="linkPatientToUser()">Link Patient</button>
+        </div>
+      </div>
+
+      <div class="link-section">
+        <h2>Link Doctor to User</h2>
+        <div class="form-row">
+          <label for="unlinked-doctors">Unlinked Doctors</label>
+          <select id="unlinked-doctors"></select>
+        </div>
+
+        <div class="form-row">
+          <label for="available-users-doctor">Available Users</label>
+          <select id="available-users-doctor"></select>
+        </div>
+
+        <div class="form-row">
+          <button onclick="linkDoctorToUser()">Link Doctor</button>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+</div>
+
+<script src="js/utils.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/link_users.js"></script>
+
+<script>
+  window.onload = function() {
+    const token = localStorage.getItem('access_token');
+    const role = localStorage.getItem('user_role');
+    const username = localStorage.getItem('username');
+
+    if (!token || !role) {
+      alert('Session expired. Please login again.');
+      window.location.href = 'index.html';
+      return;
+    }
+
+    if (role !== 'admin') {
+      alert('Access denied. Unauthorized role.');
+      window.location.href = 'index.html';
+      return;
+    }
+
+    document.body.style.visibility = 'visible';
+
+    loadLinkingData();
+  }
+
+  function logout() {
+    localStorage.clear();
+    window.location.href = 'index.html';
+  }
+</script>
+
+</body>
+</html>

@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Create New User - Admin</title>
+  <link rel="stylesheet" href="css/styles.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    body {
+      visibility: hidden;
+      background-color: #f5f6fa;
+      margin: 0;
+      font-family: Arial, sans-serif;
+    }
+    .dashboard-container {
+      display: flex;
+      min-height: 100vh;
+    }
+    .sidebar {
+      width: 220px;
+      background-color: #2c3e50;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+    }
+    .sidebar h2 {
+      color: white;
+      margin-bottom: 20px;
+    }
+    .sidebar button {
+      background-color: #3498db;
+      color: white;
+      border: none;
+      margin-bottom: 10px;
+      padding: 10px;
+      font-size: 16px;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    .sidebar button:hover {
+      background-color: #2980b9;
+    }
+    .logout-button {
+      background-color: #e74c3c;
+    }
+    .logout-button:hover {
+      background-color: #c0392b;
+    }
+    .main-content {
+      flex-grow: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 30px;
+    }
+    .form-container {
+      background: white;
+      padding: 30px 40px;
+      border-radius: 10px;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+      width: 100%;
+      max-width: 400px;
+    }
+    .form-container h1 {
+      text-align: center;
+      color: #2c3e50;
+      margin-bottom: 30px;
+    }
+    .form-row {
+      margin-bottom: 20px;
+    }
+    .form-row label {
+      font-weight: bold;
+      display: block;
+      margin-bottom: 8px;
+      color: #34495e;
+    }
+    .form-row input, .form-row select {
+      width: 100%;
+      padding: 10px;
+      font-size: 16px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      box-sizing: border-box;
+    }
+    .form-row button {
+      width: 100%;
+      padding: 12px;
+      font-size: 18px;
+      background-color: #3498db;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    .form-row button:hover {
+      background-color: #2980b9;
+    }
+  </style>
+</head>
+<body>
+
+<div class="dashboard-container">
+  <div class="sidebar">
+    <h2>Admin Panel</h2>
+    <button onclick="window.location.href='admin_dashboard.html'">Dashboard</button>
+    <button onclick="window.location.href='patients.html'">Manage Patients</button>
+    <button onclick="window.location.href='doctors.html'">Manage Doctors</button>
+    <button onclick="window.location.href='appointments.html'">Manage Appointments</button>
+    <button onclick="window.location.href='link_users.html'">Link Users</button>
+    <button onclick="window.location.href='create_user.html'">Create User</button>
+    <button class="logout-button" onclick="logout()">Logout</button>
+  </div>
+
+  <div class="main-content">
+    <div class="form-container">
+      <h1>Create New User</h1>
+
+      <div class="form-row">
+        <label for="username">Username</label>
+        <input type="text" id="username" placeholder="Enter Username">
+      </div>
+
+      <div class="form-row">
+        <label for="password">Password</label>
+        <input type="password" id="password" placeholder="Enter Password">
+      </div>
+
+      <div class="form-row">
+        <label for="role">Role</label>
+        <select id="role">
+          <option value="">Select Role</option>
+          <option value="admin">Admin</option>
+          <option value="doctor">Doctor</option>
+          <option value="patient">Patient</option>
+        </select>
+      </div>
+
+      <div class="form-row">
+        <button onclick="createUser()">Create User</button>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script src="js/utils.js"></script>
+<script src="js/auth.js"></script>
+
+<script>
+  window.onload = function() {
+    const token = localStorage.getItem('access_token');
+    const role = localStorage.getItem('user_role');
+    const username = localStorage.getItem('username');
+
+    if (!token || !role) {
+      alert('Session expired. Please login again.');
+      window.location.href = 'index.html';
+      return;
+    }
+
+    if (role !== 'admin') {
+      alert('Access denied. Unauthorized role.');
+      window.location.href = 'index.html';
+      return;
+    }
+
+    document.body.style.visibility = 'visible';
+  }
+
+  async function createUser() {
+  const username = document.getElementById('username').value;
+  const password = document.getElementById('password').value;
+  const role = document.getElementById('role').value;
+  const token = localStorage.getItem('access_token');
+
+  if (!username || !password || !role) {
+    alert('Please fill all fields.');
+    return;
+  }
+
+  try {
+    const response = await fetch(`${BASE_URL}/auth/signup`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${token}`  // ✅ Adding admin token here
+      },
+      body: JSON.stringify({ username, password, role })
+    });
+
+    if (response.ok) {
+      alert('User created successfully!');
+      window.location.reload();
+    } else {
+      const errorData = await response.json();
+      alert('Failed: ' + (errorData.detail || 'Unknown error'));
+    }
+  } catch (error) {
+    console.error('Error creating user:', error);
+    alert('Server error');
+  }
+}
+
+
+  function logout() {
+    localStorage.clear();
+    window.location.href = 'index.html';
+  }
+</script>
+
+</body>
+</html>

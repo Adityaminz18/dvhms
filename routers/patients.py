@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 import schemas, crud, database
 from auth import get_current_user, admin_required  # Import admin_required
-from models import User  # Import the User model
+from models import User, Patient  # Import the User and Patient models
 
 router = APIRouter(
     prefix="/patients",
@@ -29,15 +29,36 @@ def list_patients(
     skip: int = 0, 
     limit: int = 10, 
     db: Session = Depends(get_db), 
-    current_user: User = Depends(get_current_user)  # Accessible to all authenticated users
+    current_user: User = Depends(get_current_user)  # Admin-only access
 ):
     return crud.get_patients(db, skip, limit)
+
+@router.get("/me", response_model=schemas.PatientOut)
+def get_my_patient(
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)  # Only normal login required, not admin
+):
+    patient = db.query(Patient).filter(Patient.user_id == current_user.id).first()
+    if not current_user.id:
+        raise HTTPException(status_code=400, detail="Invalid user ID in current_user.")
+    
+    if not patient:
+        raise HTTPException(status_code=404, detail="No patient profile found for current user.")
+    
+    return patient
+
+@router.get("/all", response_model=list[schemas.PatientOut])
+def get_all_patients(
+    db: Session = Depends(get_db),
+    current_user: User = Depends(admin_required)  # Admin-only access
+):
+    return crud.get_all_patients(db)
 
 @router.get("/{patient_id}", response_model=schemas.PatientOut)
 def get_patient(
     patient_id: int, 
     db: Session = Depends(get_db), 
-    current_user: User = Depends(get_current_user)  # Accessible to all authenticated users
+    current_user: User = Depends(get_current_user)  # Admin-only access
 ):
     patient = crud.get_patient(db, patient_id)
     if not patient:
@@ -85,4 +106,5 @@ def link_patient_user(
     db.commit()
     db.refresh(patient)
     return patient
+
 

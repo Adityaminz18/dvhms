@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Doctor Dashboard</title>
+  <link rel="stylesheet" href="css/styles.css">
+  <script>
+    const BASE_URL = "http://localhost:8000"; // Change if hosted somewhere else
+  </script>
+  <style>
+    body { visibility: hidden; background: #f5f6fa; margin: 0; font-family: Arial, sans-serif; }
+    .dashboard-container { display: flex; min-height: 100vh; }
+    .sidebar { width: 220px; background-color: #2c3e50; padding: 20px; display: flex; flex-direction: column; }
+    .sidebar h2 { color: white; margin-bottom: 20px; }
+    .sidebar button { background-color: #3498db; color: white; border: none; margin-bottom: 10px; padding: 10px; font-size: 16px; border-radius: 6px; cursor: pointer; }
+    .sidebar button:hover { background-color: #2980b9; }
+    .logout-button { background-color: #e74c3c; }
+    .logout-button:hover { background-color: #c0392b; }
+    .main-content { flex-grow: 1; padding: 30px; }
+    table { width: 100%; background: white; border-collapse: collapse; margin-top: 20px; border-radius: 8px; overflow: hidden; box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
+    table th, table td { padding: 12px; text-align: left; border-bottom: 1px solid #ccc; }
+    table th { background-color: #3498db; color: white; }
+    table tr:hover { background-color: #f2f2f2; }
+    h1, h2 { color: #2c3e50; }
+    .hidden { display: none; }
+  </style>
+</head>
+
+<body>
+
+<div class="dashboard-container">
+  <div class="sidebar">
+    <h2>Doctor Panel</h2>
+    <button onclick="showSection('pending')">Dashboard</button>
+    <button onclick="showSection('confirmed')">Patient Records</button>
+    <button onclick="showSection('cancelled')">Cancelled Appointments</button>
+    <button class="logout-button" onclick="logout()">Logout</button>
+  </div>
+
+  <div class="main-content">
+    <div id="user-info"></div>
+
+    <div id="pending-section">
+      <h1>Active Schedule (Pending)</h1>
+      <table id="pending-table">
+        <thead>
+          <tr>
+            <th>Patient Name</th><th>Age</th><th>Gender</th><th>Phone</th><th>Date</th><th>Time</th><th>Change Status</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+
+    <div id="confirmed-section" class="hidden">
+      <h1>Patient Records (Confirmed)</h1>
+      <table id="confirmed-table">
+        <thead>
+          <tr>
+            <th>Patient Name</th><th>Age</th><th>Gender</th><th>Phone</th><th>Date</th><th>Time</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+
+    <div id="cancelled-section" class="hidden">
+      <h1>Cancelled Appointments</h1>
+      <table id="cancelled-table">
+        <thead>
+          <tr>
+            <th>Patient Name</th><th>Age</th><th>Gender</th><th>Phone</th><th>Date</th><th>Time</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+
+  </div>
+</div>
+
+<script src="js/utils.js"></script>
+<script src="js/auth.js"></script>
+
+<script>
+let intervalId;
+
+window.onload = async function() {
+  const token = localStorage.getItem('access_token');
+  const role = localStorage.getItem('user_role');
+  const username = localStorage.getItem('username');
+
+  if (!token || role !== 'doctor') {
+    alert('Access denied or session expired.');
+    window.location.href = 'index.html';
+    return;
+  }
+
+  document.body.style.visibility = 'visible';
+  document.getElementById('user-info').innerHTML = `<h3>Hello, Dr. <b>${username}</b></h3><p>Role: <b>${role}</b></p>`;
+
+  showSection('pending');
+};
+
+function showSection(section) {
+  clearInterval(intervalId);
+
+  document.getElementById('pending-section').classList.add('hidden');
+  document.getElementById('confirmed-section').classList.add('hidden');
+  document.getElementById('cancelled-section').classList.add('hidden');
+
+  if (section === 'pending') {
+    document.getElementById('pending-section').classList.remove('hidden');
+    loadAppointments('Pending');
+    intervalId = setInterval(() => loadAppointments('Pending'), 10000);
+  } else if (section === 'confirmed') {
+    document.getElementById('confirmed-section').classList.remove('hidden');
+    loadAppointments('Confirmed');
+  } else if (section === 'cancelled') {
+    document.getElementById('cancelled-section').classList.remove('hidden');
+    loadAppointments('Cancelled');
+  }
+}
+
+async function loadAppointments(statusFilter) {
+  const token = localStorage.getItem('access_token');
+  const username = localStorage.getItem('username');
+
+  try {
+    const [appointmentsRes, doctorsRes, patientsRes] = await Promise.all([
+      fetch(`${BASE_URL}/appointments/`, { headers: { Authorization: `Bearer ${token}` } }),
+      fetch(`${BASE_URL}/doctors/`, { headers: { Authorization: `Bearer ${token}` } }),
+      fetch(`${BASE_URL}/patients/`, { headers: { Authorization: `Bearer ${token}` } }),
+    ]);
+
+    const appointments = await appointmentsRes.json();
+    const doctors = await doctorsRes.json();
+    const patients = await patientsRes.json();
+
+    const doctor = doctors.find(d => d.user_id && d.name.toLowerCase().includes(username.toLowerCase()));
+    if (!doctor) return;
+
+    const filteredAppointments = appointments.filter(a => a.doctor_id === doctor.id && a.status === statusFilter);
+
+    const sectionId = statusFilter.toLowerCase() + "-table";
+    const tbody = document.querySelector(`#${sectionId} tbody`);
+    tbody.innerHTML = "";
+
+    filteredAppointments.forEach(app => {
+      const patient = patients.find(p => p.id === app.patient_id) || {};
+      const row = document.createElement('tr');
+      row.innerHTML = `
+        <td>${patient.name || "Unknown"}</td>
+        <td>${patient.age || "-"}</td>
+        <td>${patient.gender || "-"}</td>
+        <td>${patient.phone || "-"}</td>
+        <td>${app.date}</td>
+        <td>${app.time}</td>
+        ${statusFilter === 'Pending' ? `<td>
+          <select onchange="updateAppointmentStatus(${app.id}, this.value)">
+            <option value="Pending" ${app.status === "Pending" ? "selected" : ""}>Pending</option>
+            <option value="Confirmed" ${app.status === "Confirmed" ? "selected" : ""}>Confirmed</option>
+            <option value="Cancelled" ${app.status === "Cancelled" ? "selected" : ""}>Cancelled</option>
+          </select>
+        </td>` : ""}
+      `;
+      tbody.appendChild(row);
+    });
+
+  } catch (error) {
+    console.error('Failed to load appointments:', error);
+  }
+}
+
+async function updateAppointmentStatus(appointmentId, newStatus) {
+  const token = localStorage.getItem('access_token');
+  try {
+    const res = await fetch(`${BASE_URL}/appointments/${appointmentId}`, {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+    const appointment = await res.json();
+    appointment.status = newStatus;
+
+    await fetch(`${BASE_URL}/appointments/${appointmentId}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+      body: JSON.stringify(appointment)
+    });
+
+    alert('Status updated!');
+    loadAppointments('Pending');
+  } catch (err) {
+    console.error(err);
+    alert('Update failed!');
+  }
+}
+
+function logout() {
+  localStorage.clear();
+  window.location.href = 'index.html';
+}
+</script>
+
+</body>
+</html>

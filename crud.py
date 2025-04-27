@@ -16,6 +16,9 @@ def create_patient(db: Session, patient: schemas.PatientCreate, user_id: int = N
 def get_patient(db: Session, patient_id: int):
     return db.query(models.Patient).filter(models.Patient.id == patient_id).first()
 
+def get_patient_by_user_id(db: Session, user_id: int):
+    return db.query(models.Patient).filter(models.Patient.user_id == user_id).first()
+
 def get_patients(db: Session, skip: int = 0, limit: int = 10):
     return db.query(models.Patient).offset(skip).limit(limit).all()
 
@@ -35,7 +38,6 @@ def delete_patient(db: Session, patient_id: int):
         db.commit()
     return db_patient
 
-
 # ---------------------- DOCTOR ----------------------
 
 def create_doctor(db: Session, doctor: schemas.DoctorCreate, user_id: int = None):
@@ -47,8 +49,12 @@ def create_doctor(db: Session, doctor: schemas.DoctorCreate, user_id: int = None
     db.commit()
     db.refresh(db_doctor)
     return db_doctor
+
 def get_doctor(db: Session, doctor_id: int):
     return db.query(models.Doctor).filter(models.Doctor.id == doctor_id).first()
+
+def get_doctor_by_user_id(db: Session, user_id: int):
+    return db.query(models.Doctor).filter(models.Doctor.user_id == user_id).first()
 
 def get_doctors(db: Session, skip: int = 0, limit: int = 10):
     return db.query(models.Doctor).offset(skip).limit(limit).all()
@@ -84,6 +90,12 @@ def get_appointment(db: Session, appointment_id: int):
 def get_appointments(db: Session, skip: int = 0, limit: int = 10):
     return db.query(models.Appointment).offset(skip).limit(limit).all()
 
+def get_appointments_by_patient_id(db: Session, patient_id: int):
+    return db.query(models.Appointment).filter(models.Appointment.patient_id == patient_id).all()
+
+def get_appointments_by_doctor_id(db: Session, doctor_id: int):
+    return db.query(models.Appointment).filter(models.Appointment.doctor_id == doctor_id).all()
+
 def update_appointment(db: Session, appointment_id: int, updated: schemas.AppointmentCreate):
     db_appointment = get_appointment(db, appointment_id)
     if db_appointment:
@@ -99,4 +111,3 @@ def delete_appointment(db: Session, appointment_id: int):
         db.delete(db_appointment)
         db.commit()
     return db_appointment
-# This code defines CRUD operations for managing patients, doctors, and appointments in a hospital management system.

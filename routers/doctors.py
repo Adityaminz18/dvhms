@@ -37,7 +37,7 @@ def list_doctors(
 def get_doctor(
     doctor_id: int, 
     db: Session = Depends(get_db), 
-    current_user: User = Depends(get_current_user)  # Accessible to all authenticated users
+    current_user: User = Depends(admin_required)  # Accessible to all authenticated users
 ):
     doctor = crud.get_doctor(db, doctor_id)
     if not doctor:

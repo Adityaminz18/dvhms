@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Patient Dashboard</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+
+  <style>
+    body {
+      font-family: 'Roboto', sans-serif;
+    }
+  </style>
+</head>
+
+<body class="bg-gray-100 hidden">
+
+<header class="bg-green-600 text-white py-4 text-center shadow-md">
+  <h1 id="welcome-text" class="text-3xl font-bold">Welcome, Patient</h1>
+  <button onclick="logout()" class="mt-2 bg-red-500 hover:bg-red-600 px-4 py-2 rounded">Logout</button>
+</header>
+
+<main class="p-6">
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+    <!-- Profile Card -->
+    <div class="bg-white rounded-lg shadow-lg p-6">
+      <h2 class="text-2xl font-bold mb-4">Your Profile</h2>
+      <p><strong>Name:</strong> <span id="patient-name">Loading...</span></p>
+      <p><strong>Age:</strong> <span id="patient-age">Loading...</span></p>
+      <p><strong>Gender:</strong> <span id="patient-gender">Loading...</span></p>
+      <p><strong>Address:</strong> <span id="patient-address">Loading...</span></p>
+      <p><strong>Phone:</strong> <span id="patient-phone">Loading...</span></p>
+      <p><strong>Username:</strong> <span id="username"></span></p>
+      <p><strong>Role:</strong> <span id="role"></span></p>
+    </div>
+
+    <!-- Appointments Card -->
+    <div class="bg-white rounded-lg shadow-lg p-6">
+      <h2 class="text-2xl font-bold mb-4">Your Appointments</h2>
+      <ul id="appointments-list" class="space-y-4">
+        <li>Loading appointments...</li>
+      </ul>
+    </div>
+
+    <!-- Book Appointment Card -->
+    <div class="bg-white rounded-lg shadow-lg p-6 col-span-1 md:col-span-2">
+      <h2 class="text-2xl font-bold mb-4">Book New Appointment</h2>
+      <form id="appointment-form" class="space-y-4">
+        <div>
+          <label for="doctor-select" class="block font-medium">Select Doctor:</label>
+          <select id="doctor-select" required class="w-full border rounded px-3 py-2">
+            <option value="">Loading doctors...</option>
+          </select>
+        </div>
+
+        <div>
+          <label for="date" class="block font-medium">Date:</label>
+          <input type="date" id="date" required class="w-full border rounded px-3 py-2">
+        </div>
+
+        <div>
+          <label for="time" class="block font-medium">Time:</label>
+          <input type="time" id="time" required class="w-full border rounded px-3 py-2">
+        </div>
+
+        <button type="submit" class="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded shadow">
+          Book Appointment
+        </button>
+      </form>
+    </div>
+
+  </div>
+</main>
+
+<!-- JS Files -->
+<script src="js/utils.js"></script>
+<script src="js/auth.js"></script>
+
+<script>
+document.addEventListener('DOMContentLoaded', async function () {
+    const token = localStorage.getItem('access_token');
+    const username = localStorage.getItem('username');
+    const role = localStorage.getItem('user_role');
+
+    if (!token) {
+        alert('You must be logged in.');
+        window.location.href = 'index.html';
+        return;
+    }
+
+    const user = decodeJWT(token);
+    if (!user || user.exp * 1000 < Date.now()) {
+        alert('Session expired. Please login again.');
+        localStorage.clear();
+        window.location.href = 'index.html';
+        return;
+    }
+
+    if (role !== 'patient') {
+        alert('Access Denied. Only patients can access this dashboard.');
+        window.location.href = 'index.html';
+        return;
+    }
+
+    document.body.classList.remove('hidden');
+
+    document.getElementById('welcome-text').innerText = `Welcome, ${username}`;
+    document.getElementById('username').innerText = username;
+    document.getElementById('role').innerText = role;
+
+    await loadProfile();
+    await loadAppointments();
+    await loadDoctors();
+});
+
+async function loadProfile() {
+    try {
+        const response = await fetchWithAuth('/patients/me');
+        
+        if (!response.ok) {
+            throw new Error('Failed to load patient profile.');
+        }
+
+        const patient = await response.json();
+
+        document.getElementById('patient-name').innerText = patient.name;
+        document.getElementById('patient-age').innerText = patient.age;
+        document.getElementById('patient-gender').innerText = patient.gender;
+        document.getElementById('patient-address').innerText = patient.address;
+        document.getElementById('patient-phone').innerText = patient.phone;
+
+        localStorage.setItem('patient_id', patient.id);
+    } catch (error) {
+        console.error('Error loading profile:', error);
+        document.getElementById('patient-name').innerText = "Error loading profile!";
+    }
+}
+
+async function loadAppointments() {
+    try {
+        const response = await fetchWithAuth('/appointments/');
+
+        if (!response.ok) {
+            throw new Error('Failed to fetch appointments.');
+        }
+
+        const appointments = await response.json();
+        const appointmentsList = document.getElementById('appointments-list');
+        appointmentsList.innerHTML = '';
+
+        if (appointments.length === 0) {
+            appointmentsList.innerHTML = '<li>No appointments found.</li>';
+        } else {
+            appointments.forEach(appointment => {
+                const statusColor = getStatusColor(appointment.status);
+                const li = document.createElement('li');
+                li.innerHTML = `
+                    <div class="p-3 border rounded shadow bg-white">
+                        <p><strong>Doctor ID:</strong> ${appointment.doctor_id}</p>
+                        <p><strong>Date:</strong> ${appointment.date}</p>
+                        <p><strong>Time:</strong> ${appointment.time}</p>
+                        <p><strong>Status:</strong> <span class="${statusColor} font-semibold">${appointment.status || 'Pending'}</span></p>
+                    </div>
+                `;
+                appointmentsList.appendChild(li);
+            });
+        }
+    } catch (error) {
+        console.error('Error loading appointments:', error);
+        document.getElementById('appointments-list').innerHTML = '<li>Error loading appointments.</li>';
+    }
+}
+
+function getStatusColor(status) {
+    switch (status?.toLowerCase()) {
+        case 'confirmed':
+            return 'text-green-600';
+        case 'cancelled':
+            return 'text-red-600';
+        default:
+            return 'text-blue-600'; // Pending or others
+    }
+}
+
+async function loadDoctors() {
+    try {
+        const response = await fetchWithAuth('/doctors/');
+
+        if (!response.ok) {
+            throw new Error('Failed to fetch doctors.');
+        }
+
+        const doctors = await response.json();
+        const doctorSelect = document.getElementById('doctor-select');
+        doctorSelect.innerHTML = '<option value="">Select a Doctor</option>';
+
+        doctors.forEach(doctor => {
+            const option = document.createElement('option');
+            option.value = doctor.id;
+            option.textContent = `${doctor.name} (${doctor.specialization})`;
+            doctorSelect.appendChild(option);
+        });
+    } catch (error) {
+        console.error('Error loading doctors:', error);
+        const doctorSelect = document.getElementById('doctor-select');
+        doctorSelect.innerHTML = '<option value="">Error loading doctors</option>';
+    }
+}
+
+function logout() {
+    localStorage.clear();
+    window.location.href = 'index.html';
+}
+
+document.getElementById('appointment-form').addEventListener('submit', async function(event) {
+    event.preventDefault();
+
+    const patientId = localStorage.getItem('patient_id');
+    const doctorId = document.getElementById('doctor-select').value;
+    const date = document.getElementById('date').value;
+    const time = document.getElementById('time').value;
+
+    if (!patientId || !doctorId || !date || !time) {
+        alert('Please fill all fields.');
+        return;
+    }
+
+    const appointmentData = {
+        patient_id: parseInt(patientId),
+        doctor_id: parseInt(doctorId),
+        date: date,
+        time: time,
+        status: 'Pending' // ✅ Always set as pending
+    };
+
+    try {
+        const response = await fetchWithAuth('/appointments/', {
+            method: 'POST',
+            body: JSON.stringify(appointmentData)
+        });
+
+        if (response.ok) {
+            alert('Appointment booked successfully!');
+            document.getElementById('appointment-form').reset();
+            loadAppointments();
+        } else {
+            const errorData = await response.json();
+            alert('Failed to book appointment: ' + (errorData.detail || 'Unknown error'));
+        }
+    } catch (error) {
+        console.error('Error booking appointment:', error);
+        alert('Something went wrong.');
+    }
+});
+</script>
+
+</body>
+</html>

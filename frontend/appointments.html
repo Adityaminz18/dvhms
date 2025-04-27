@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Manage Appointments - Admin</title>
+  <link rel="stylesheet" href="css/styles.css">
+  <style>
+    body {
+      visibility: hidden;
+    }
+    table {
+      width: 100%;
+      margin-top: 20px;
+      border-collapse: collapse;
+    }
+    table, th, td {
+      border: 1px solid #ccc;
+    }
+    th, td {
+      padding: 10px;
+      text-align: left;
+    }
+    .form-container {
+      margin-top: 30px;
+      padding: 20px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      background: #f9f9f9;
+      max-width: 500px;
+    }
+    .form-row {
+      margin-bottom: 15px;
+    }
+    .form-row label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: bold;
+    }
+    select, input[type="date"], input[type="time"], input[type="text"] {
+      width: 100%;
+      padding: 8px;
+      font-size: 16px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+    }
+    button {
+      padding: 10px 20px;
+      font-size: 16px;
+      background-color: #3498db;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #2980b9;
+    }
+  </style>
+</head>
+<body>
+
+<div class="dashboard-container">
+  <div class="sidebar">
+    <h2>Admin Panel</h2>
+    <button onclick="window.location.href='admin_dashboard.html'">Dashboard</button>
+    <button onclick="window.location.href='patients.html'">Manage Patients</button>
+    <button onclick="window.location.href='doctors.html'">Manage Doctors</button>
+    <button onclick="window.location.href='appointments.html'">Manage Appointments</button>
+    <button class="logout-button" onclick="logout()">Logout</button>
+  </div>
+
+  <div class="main-content">
+    <h1>Manage Appointments</h1>
+    <div id="user-info"></div>
+
+    <h2>Appointments List</h2>
+    <table id="appointments-table">
+      <thead>
+        <tr>
+          <th>Patient ID</th>
+          <th>Doctor ID</th>
+          <th>Date</th>
+          <th>Time</th>
+          <th>Status</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- Appointments will load here -->
+      </tbody>
+    </table>
+
+    <div class="form-container">
+      <h2 id="form-title">Create New Appointment</h2>
+
+      <div class="form-row">
+        <label for="patient_id">Patient</label>
+        <select id="patient_id">
+          <option value="">Select Patient</option>
+        </select>
+      </div>
+
+      <div class="form-row">
+        <label for="doctor_id">Doctor</label>
+        <select id="doctor_id">
+          <option value="">Select Doctor</option>
+        </select>
+      </div>
+
+      <div class="form-row">
+        <label for="date">Date</label>
+        <input type="date" id="date">
+      </div>
+
+      <div class="form-row">
+        <label for="time">Time</label>
+        <input type="time" id="time">
+      </div>
+
+      <div class="form-row">
+        <label for="status">Status</label>
+        <select id="status">
+          <option value="">Select Status</option>
+          <option value="Pending">Pending</option>
+          <option value="Confirmed">Confirmed</option>
+          <option value="Cancelled">Cancelled</option>
+        </select>
+      </div>
+
+      <div class="form-row">
+        <button id="add-appointment-btn">Create Appointment</button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script src="js/utils.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/appointments.js"></script>
+
+<script>
+  window.onload = function() {
+    const token = localStorage.getItem('access_token');
+    const role = localStorage.getItem('user_role');
+    const username = localStorage.getItem('username');
+
+    if (!token || !role) {
+      alert('Session expired. Please login again.');
+      window.location.href = 'index.html';
+      return;
+    }
+
+    if (role !== 'admin') {
+      alert('Access denied. Unauthorized role.');
+      window.location.href = 'index.html';
+      return;
+    }
+
+    document.body.style.visibility = 'visible';
+
+    if (document.getElementById('user-info')) {
+      document.getElementById('user-info').innerHTML = `
+        <h3>Hello, ${username}</h3>
+        <p>Role: ${role}</p>
+      `;
+    }
+
+    loadPatientsAndDoctors();
+    loadAppointments();
+  }
+
+  function logout() {
+    localStorage.clear();
+    window.location.href = 'index.html';
+  }
+</script>
+
+</body>
+</html>

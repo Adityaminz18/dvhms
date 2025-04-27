@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Dashboard - Hospital Management System</title>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <div class="dashboard-container">
+
+        <div class="sidebar">
+            <h2>Hospital System</h2>
+            <div id="sidebar-buttons"></div>
+            <button class="logout-button" onclick="logout()">Logout</button>
+        </div>
+
+        <div class="main-content">
+            <div id="user-info"></div>
+            <h1>Welcome to the Hospital Management System</h1>
+            <div class="dashboard-widgets">
+                <div class="widget">
+                    <h3>Patient Records</h3>
+                    <p>View and manage patient information.</p>
+                    <button onclick="navigateTo('patients')">Go to Patients</button>
+                </div>
+                <div class="widget">
+                    <h3>Appointments</h3>
+                    <p>Schedule and view appointments.</p>
+                    <button onclick="navigateTo('appointments')">Go to Appointments</button>
+                </div>
+                <div class="widget">
+                    <h3>Staff Management</h3>
+                    <p>Manage hospital staff details.</p>
+                    <button onclick="navigateTo('staff')">Go to Staff</button>
+                </div>
+                <div class="widget">
+                    <h3>Billing</h3>
+                    <p>Manage billing and payments.</p>
+                    <button onclick="navigateTo('billing')">Go to Billing</button>
+                </div>
+                <div class="widget">
+                    <h3>Inventory</h3>
+                    <p>Track and manage hospital inventory.</p>
+                    <button onclick="navigateTo('inventory')">Go to Inventory</button>
+                </div>
+                <div class="widget">
+                    <h3>Reports</h3>
+                    <p>Generate and view hospital reports.</p>
+                    <button onclick="navigateTo('reports')">Go to Reports</button>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script src="js/utils.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/dashboard.js"></script>
+    <noscript>
+        <p>JavaScript is disabled in your browser. Please enable it to use the dashboard features.</p>
+    </noscript>
+</body>
+</html>

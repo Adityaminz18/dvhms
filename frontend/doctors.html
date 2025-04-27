@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Manage Doctors - Admin</title>
+  <link rel="stylesheet" href="css/styles.css">
+  <style>
+    body {
+      visibility: hidden;
+    }
+    table {
+      width: 100%;
+      margin-top: 20px;
+      border-collapse: collapse;
+    }
+    table, th, td {
+      border: 1px solid #ccc;
+    }
+    th, td {
+      padding: 10px;
+      text-align: left;
+    }
+    .form-container {
+      margin-top: 30px;
+    }
+  </style>
+</head>
+<body>
+
+<div class="dashboard-container">
+  <div class="sidebar">
+    <h2>Admin Panel</h2>
+    <button onclick="window.location.href='admin_dashboard.html'">Dashboard</button>
+    <button onclick="window.location.href='patients.html'">Manage Patients</button>
+    <button onclick="window.location.href='doctors.html'">Manage Doctors</button>
+    <button onclick="window.location.href='appointments.html'">Manage Appointments</button>
+    <button class="logout-button" onclick="logout()">Logout</button>
+  </div>
+
+  <div class="main-content">
+    <h1>Manage Doctors</h1>
+    <div id="user-info"></div>
+
+    <h2>Doctors List</h2>
+    <table id="doctors-table">
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Specialization</th>
+          <th>Phone</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- Doctors will load here -->
+      </tbody>
+    </table>
+
+    <div class="form-container">
+      <h2 id="form-title">Add New Doctor</h2>
+      <input type="text" id="name" placeholder="Name">
+      <input type="text" id="specialization" placeholder="Specialization">
+      <input type="text" id="phone" placeholder="Phone">
+      <button id="add-doctor-btn">Add Doctor</button>
+    </div>
+
+  </div>
+</div>
+
+<script src="js/utils.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/doctors.js"></script>
+
+<script>
+  window.onload = function() {
+    const token = localStorage.getItem('access_token');
+    const role = localStorage.getItem('user_role');
+    const username = localStorage.getItem('username');
+
+    if (!token || !role) {
+      alert('Session expired. Please login again.');
+      window.location.href = 'index.html';
+      return;
+    }
+
+    if (role !== 'admin') {
+      alert('Access denied. Unauthorized role.');
+      window.location.href = 'index.html';
+      return;
+    }
+
+    document.body.style.visibility = 'visible';
+
+    if (document.getElementById('user-info')) {
+      document.getElementById('user-info').innerHTML = `
+        <h3>Hello, ${username}</h3>
+        <p>Role: ${role}</p>
+      `;
+    }
+
+    loadDoctors();
+  }
+
+  function logout() {
+    localStorage.clear();
+    window.location.href = 'index.html';
+  }
+</script>
+
+</body>
+</html>
